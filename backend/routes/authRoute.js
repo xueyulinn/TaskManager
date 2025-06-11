@@ -1,10 +1,17 @@
 import express from "express";
-import { userSignin, userSignup } from "../controllers/authController.js";
-import upload from "../middlewares/uploadMiddleWare.js";
+import {
+  userSignin,
+  userSignup,
+  getUserProfile,
+} from "../controllers/authController.js";
+import upload from "../middlewares/uploadMiddleware.js";
+import userVerify from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.post("/signup", userSignup);
 router.post("/signin", userSignin);
+router.get("/profile", userVerify, getUserProfile);
+// router.put("/profile", protect, updateUserProfile);
 
 router.post("/upload-image", upload.single("image"), (req, res) => {
   if (!req.file) {

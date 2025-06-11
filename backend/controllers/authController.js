@@ -38,12 +38,12 @@ const userSignup = async (req, res) => {
     });
 
     res.status(201).json({
-      _id: user._id,
+      _id: user.id,
       username: user.username,
       email: user.email,
       avatar: user.avatar,
       role: user.role,
-      token: generateJWT(user._id),
+      token: generateJWT(user.id),
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -64,15 +64,26 @@ const userSignin = async (req, res) => {
 
     // return user data with JWT
     res.status(201).json({
-      _id: user._id,
+      _id: user.id,
       username: user.userName,
       email: user.email,
       role: user.role,
       avatar: user.avatar,
-      token: generateJWT(user._id),
+      token: generateJWT(user.id),
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-export { userSignup, userSignin };
+
+const getUserProfile = async (req, res) => {
+  try {
+    // exclude the password field
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) return res.status(401).json({ message: "User not found" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+export { userSignup, userSignin, getUserProfile };
