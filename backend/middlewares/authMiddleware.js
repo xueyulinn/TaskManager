@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 const userVerify = async (req, res, next) => {
   try {
     let token = req.headers.authorization;
@@ -16,4 +17,15 @@ const userVerify = async (req, res, next) => {
   }
 };
 
-export default userVerify;
+const adminOnly = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (user && user.role == "admin") {
+      next();
+    } else res.status(401).json({ message: "Admin only" });
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
+};
+
+export { userVerify, adminOnly };

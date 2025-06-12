@@ -15,7 +15,7 @@ const userSignup = async (req, res) => {
     // check if user exists
     const exists = await User.findOne({ email });
     if (exists) {
-      res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "User already exists" });
     }
 
     // identify user role
@@ -25,8 +25,8 @@ const userSignup = async (req, res) => {
     }
 
     // hash the password
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
+    const salt = await bcrypt.genSaltSync(10);
+    const hash = await bcrypt.hashSync(password, salt);
 
     // create user
     const user = await User.create({
@@ -56,11 +56,11 @@ const userSignin = async (req, res) => {
     // check if the user exists
     const user = await User.findOne({ username });
     if (!user)
-      res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid username or password" });
 
     const match = bcrypt.compareSync(password, user.password);
     if (!match)
-      res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid username or password" });
 
     // return user data with JWT
     res.status(201).json({

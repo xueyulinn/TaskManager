@@ -5,7 +5,7 @@ import {
   getUserProfile,
 } from "../controllers/authController.js";
 import upload from "../middlewares/uploadMiddleware.js";
-import userVerify from "../middlewares/authMiddleware.js";
+import { userVerify } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.post("/signup", userSignup);
