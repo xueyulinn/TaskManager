@@ -42,13 +42,5 @@ const getUserById = async (req, res) => {
     res.json({ message: error.message });
   }
 };
-const deleteUser = async (req, res) => {
-  try {
-    await User.deleteOne(req.params.id);
-    res.json({ message: "Deleted successfully" });
-  } catch (error) {
-    res.json({ message: error.message });
-  }
-};
 
-export { getAllUsers, getUserById, deleteUser };
+export { getAllUsers, getUserById };

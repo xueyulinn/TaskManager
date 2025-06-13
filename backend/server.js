@@ -4,6 +4,7 @@ import cors from "cors";
 import connect from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
+import taskRoutes from "./routes/taskRoute.js";
 const app = express();
 
 app.use(
@@ -24,7 +25,7 @@ connect();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-// app.use("/api/tasks", taskRoutes);
+app.use("/api/tasks", taskRoutes);
 // app.use("/api/reports", reportRoutes);
 
 const PORT = process.env.PORT || 3000;

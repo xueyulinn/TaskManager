@@ -1,10 +1,4 @@
 import { Schema, model } from "mongoose";
-
-const todoSchema = new Schema({
-  text: { type: String, required: true },
-  completed: { type: Boolean, default: false },
-});
-
 const taskSchema = new Schema(
   {
     title: { type: String, required: true },
@@ -23,7 +17,12 @@ const taskSchema = new Schema(
     assignedTo: [{ type: Schema.Types.ObjectId, ref: "User" }],
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
     attachments: [{ type: String }],
-    todoChecklist: [todoSchema],
+    todoChecklist: [
+      {
+        text: { type: String, required: true },
+        completed: { type: Boolean, default: false },
+      },
+    ],
     progress: { type: Number, default: 0 },
   },
   { timestamps: true }
