@@ -5,6 +5,7 @@ import connect from "./config/db.js";
 import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import taskRoutes from "./routes/taskRoute.js";
+import reportRoutes from "./routes/reportRoute.js";
 const app = express();
 
 app.use(
@@ -26,7 +27,7 @@ connect();
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
-// app.use("/api/reports", reportRoutes);
+app.use("/api/reports", reportRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
