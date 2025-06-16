@@ -4,30 +4,33 @@ import Signup from "./pages/auth/Signup";
 import DashBoard from "./pages/admin/DashBoard";
 import UserDashBoard from "./pages/user/UserDashBoard";
 import PrivateRoute from "./routes/PrivateRoute";
+import UserProvider from "./assets/context/UserContext";
 const App = () => {
   return (
-    <div>
-      <Router>
-        <Routes>
-          <Route path="accounts/login" element={<Login></Login>}></Route>
-          <Route path="accounts/signup" element={<Signup></Signup>}></Route>
+    <UserProvider>
+      <div>
+        <Router>
+          <Routes>
+            <Route path="accounts/login" element={<Login></Login>}></Route>
+            <Route path="accounts/signup" element={<Signup></Signup>}></Route>
 
-          <Route
-            element={<PrivateRoute allowedRoles={["admin"]}></PrivateRoute>}
-          >
             <Route
-              path="admin/dashboard"
-              element={<DashBoard></DashBoard>}
-            ></Route>
-          </Route>
+              element={<PrivateRoute allowedRoles={["admin"]}></PrivateRoute>}
+            >
+              <Route
+                path="admin/dashboard"
+                element={<DashBoard></DashBoard>}
+              ></Route>
+            </Route>
 
-          <Route
-            path="user/dashboard"
-            element={<UserDashBoard></UserDashBoard>}
-          ></Route>
-        </Routes>
-      </Router>
-    </div>
+            <Route
+              path="user/dashboard"
+              element={<UserDashBoard></UserDashBoard>}
+            ></Route>
+          </Routes>
+        </Router>
+      </div>
+    </UserProvider>
   );
 };
 

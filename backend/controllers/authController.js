@@ -51,10 +51,9 @@ const userSignup = async (req, res) => {
 };
 const userSignin = async (req, res) => {
   try {
-    const { username, password } = req.body;
-
+    const { email, password } = req.body;
     // check if the user exists
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user)
       return res.status(401).json({ message: "Invalid username or password" });
 
