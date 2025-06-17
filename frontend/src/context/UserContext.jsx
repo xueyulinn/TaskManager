@@ -1,7 +1,8 @@
-import React, { createContext, useEffect, useState } from "react";
-import axiosInstance from "../../utils/axiosInstance";
-import { API_PATHS } from "../../utils/apiPath";
+import { createContext, useEffect, useState } from "react";
+import { API_PATHS } from "../utils/apiPath";
+import axiosInstance from "../utils/axiosInstance";
 
+// for internal components to consume the context
 export const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
@@ -49,4 +50,5 @@ const UserProvider = ({ children }) => {
   );
 };
 
+// for root component to wrap all components that will consume the context
 export default UserProvider;

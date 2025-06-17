@@ -1,18 +1,17 @@
-import AuthLayout from "../../components/layouts/AuthLayout";
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router";
 import Input from "../../components/inputs/Input";
-import { Link, Route, useNavigate } from "react-router";
-import { validateEmail } from "../../utils/helper.js";
-import axiosInstance from "../../utils/axiosInstance.js";
+import AuthLayout from "../../components/layouts/AuthLayout";
+import { UserContext } from "../../context/UserContext.jsx";
 import { API_PATHS } from "../../utils/apiPath.js";
-import { UserContext } from "../../assets/context/UserContext.jsx";
+import axiosInstance from "../../utils/axiosInstance.js";
+import { validateEmail } from "../../utils/helper.js";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const { updateUser } = useContext(UserContext);
-
+  const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateEmail(email)) {
@@ -37,8 +36,8 @@ const Login = () => {
       }
 
       if (role === "admin") {
-        navigate("admin/dashboard");
-      } else navigate("user/dashboard");
+        navigate("/admin/dashboard");
+      } else navigate("/user/dashboard");
     } catch (error) {
       if (error.response && error.response.data.message) {
         setError(error.response.data.message);
@@ -52,7 +51,7 @@ const Login = () => {
       <AuthLayout>
         <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center">
           <h3 className="text-xl font-semibold text-black">Welcome Back</h3>
-          <p className="text-xs font-medium text-slate-700 mt-1">
+          <p className="text-xs font-medium text-slate-700 mt-1 mb-3">
             Please enter your deatils to log in
           </p>
 
@@ -81,7 +80,7 @@ const Login = () => {
               Don't have an account?
               <Link
                 to="/accounts/signup"
-                className="font-medium text-primary underline"
+                className="font-medium text-primary underline ml-1"
               >
                 SignUp
               </Link>

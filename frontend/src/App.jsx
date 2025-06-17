@@ -1,10 +1,17 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  Navigate,
+  Outlet,
+} from "react-router";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import DashBoard from "./pages/admin/DashBoard";
 import UserDashBoard from "./pages/user/UserDashBoard";
 import PrivateRoute from "./routes/PrivateRoute";
-import UserProvider from "./assets/context/UserContext";
+import UserProvider, { UserContext } from "./context/UserContext";
+import { useContext } from "react";
 const App = () => {
   return (
     <UserProvider>
@@ -27,10 +34,23 @@ const App = () => {
               path="user/dashboard"
               element={<UserDashBoard></UserDashBoard>}
             ></Route>
+            <Route path="/" element={<Root />}></Route>
           </Routes>
         </Router>
       </div>
     </UserProvider>
+  );
+};
+
+const Root = () => {
+  const { loading, user } = useContext(UserContext);
+  if (loading) return <Outlet />;
+  // Navigate for auto navigation
+  if (!user) return <Navigate to="accounts/login"></Navigate>;
+  return user.role === "admin" ? (
+    <Navigate to="admin/dashboard"></Navigate>
+  ) : (
+    <Navigate to="user/dashboard"></Navigate>
   );
 };
 
