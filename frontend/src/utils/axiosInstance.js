@@ -2,7 +2,7 @@ import axios from "axios";
 import { BASE_URL } from "./apiPath";
 const instance = axios.create({
   baseURL: BASE_URL,
-  timeout: 1000,
+  timeout: 3000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -31,7 +31,7 @@ instance.interceptors.response.use(
     if (error.response) {
       if (error.response.status === 401) {
         // Redirect to login page
-        window.location.href = "/login";
+        // window.location.href = "/login";
       } else if (error.response.status === 500) {
         console.error("Server error. Please try again later.");
       }

@@ -54,12 +54,14 @@ const userSignin = async (req, res) => {
     const { email, password } = req.body;
     // check if the user exists
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
+    }
 
     const match = bcrypt.compareSync(password, user.password);
-    if (!match)
+    if (!match) {
       return res.status(401).json({ message: "Invalid username or password" });
+    }
 
     // return user data with JWT
     res.status(201).json({

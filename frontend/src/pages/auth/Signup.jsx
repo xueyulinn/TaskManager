@@ -13,7 +13,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [adminToken, setAdminToken] = useState("");
+  const [adminInviteToken, setAdminInviteToken] = useState("");
   const [error, setError] = useState(null);
   const { updateUser } = useContext(UserContext);
   const [profileImg, setProfileImg] = useState(null);
@@ -47,14 +47,14 @@ const Signup = () => {
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         username,
         email,
-        adminToken,
+        adminInviteToken,
         password,
         avatar,
       });
       const { role } = response.data;
       updateUser(response.data);
       if (role === "admin") navigate("/admin/dashboard");
-      navigate("/user/dashboard");
+      else navigate("/user/dashboard");
     } catch (error) {
       if (error.response && error.response.data.message) {
         setError(error.response.data.message);
@@ -104,8 +104,8 @@ const Signup = () => {
                 type="password"
               />
               <Input
-                value={adminToken}
-                onChange={({ target }) => setAdminToken(target.value)}
+                value={adminInviteToken}
+                onChange={({ target }) => setAdminInviteToken(target.value)}
                 label="Admin Invite Token"
                 placeholder="6 Digit Code"
                 type="text"
@@ -114,10 +114,11 @@ const Signup = () => {
             <button type="submit" className="btn-primary">
               SIGN UP
             </button>
+            {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
             <p className="text-[13px] text-slate-800 mt-3">
               Alreay an account?
               <Link
-                to="accounts/login"
+                to="/accounts/login"
                 className="font-medium text-primary underline ml-1"
               >
                 Login

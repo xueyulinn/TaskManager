@@ -24,6 +24,7 @@ const Login = () => {
       return;
     }
     setError("");
+
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
         email,
@@ -39,6 +40,7 @@ const Login = () => {
         navigate("/admin/dashboard");
       } else navigate("/user/dashboard");
     } catch (error) {
+      console.log("here");
       if (error.response && error.response.data.message) {
         setError(error.response.data.message);
       } else {

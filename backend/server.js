@@ -6,6 +6,8 @@ import authRoutes from "./routes/authRoute.js";
 import userRoutes from "./routes/userRoute.js";
 import taskRoutes from "./routes/taskRoute.js";
 import reportRoutes from "./routes/reportRoute.js";
+import path from "path";
+import { fileURLToPath } from "url";
 const app = express();
 
 app.use(
@@ -29,8 +31,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/reports", reportRoutes);
 
-// Serve uploads folder
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// expose static resources
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
