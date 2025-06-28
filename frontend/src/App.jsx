@@ -12,6 +12,7 @@ import UserDashBoard from "./pages/user/UserDashBoard";
 import PrivateRoute from "./routes/PrivateRoute";
 import UserProvider, { UserContext } from "./context/UserContext";
 import { useContext } from "react";
+import CreateTask from "./pages/admin/CreateTask";
 const App = () => {
   return (
     <Router>
@@ -26,6 +27,10 @@ const App = () => {
             <Route
               path="/admin/dashboard"
               element={<DashBoard></DashBoard>}
+            ></Route>
+            <Route
+              path="/admin/create-task"
+              element={<CreateTask></CreateTask>}
             ></Route>
           </Route>
 

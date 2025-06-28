@@ -40,7 +40,6 @@ const Login = () => {
         navigate("/admin/dashboard");
       } else navigate("/user/dashboard");
     } catch (error) {
-      console.log("here");
       if (error.response && error.response.data.message) {
         setError(error.response.data.message);
       } else {
