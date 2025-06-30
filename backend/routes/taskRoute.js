@@ -19,8 +19,8 @@ router.post("/", userVerify, adminOnly, createTask);
 router.get("/", userVerify, getTasks);
 router.get("/dashboard-data", userVerify, getDashboardData);
 router.get("/user-dashboard-data", userVerify, getUserDashboardData);
-router.get("/:id", userVerify, getTaskById);
-router.put("/:id", userVerify, updateTask);
+router.get("/:taskId", userVerify, getTaskById);
+router.put("/:taskId", userVerify, updateTask);
 router.put("/:id/status", userVerify, updateTaskStatus); // Update task status
 router.put("/:id/todo", userVerify, updateTaskChecklist); // Update task checklist
 router.delete("/:id", userVerify, adminOnly, deleteTask); // Delete a task (Admin only)

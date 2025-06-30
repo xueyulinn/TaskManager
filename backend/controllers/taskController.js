@@ -11,13 +11,11 @@ const createTask = async (req, res) => {
       attachments,
       todoChecklist,
     } = req.body;
-
     if (!Array.isArray(assignedTo)) {
       return res
         .status(400)
         .json({ message: "assignedTo must be an array of user IDs" });
     }
-
     const task = await Task.create({
       title,
       description,
@@ -39,7 +37,7 @@ const getTasks = async (req, res) => {
   try {
     const filer = {};
     const { status } = req.query;
-    if (status) {
+    if (status != "All") {
       filer.status = status;
     }
 
@@ -107,7 +105,8 @@ const getTasks = async (req, res) => {
 
 const getTaskById = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id).populate(
+    const id = req.params.taskId;
+    const task = await Task.findById(id).populate(
       "assignedTo",
       "username email avatar"
     );
@@ -289,7 +288,7 @@ const updateTask = async (req, res) => {
       todoChecklist,
     } = req.body;
 
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.taskId);
     task.title = title || task.title;
     task.description = description || task.description;
     task.priority = priority || task.priority;
@@ -347,6 +346,7 @@ const updateTaskChecklist = async (req, res) => {
     if (!task.assignedTo.includes(user.id) && user.role !== "admin")
       return res.status(403).json({ message: "Not authorized" });
 
+    // update task status
     task.todoChecklist = todoChecklist;
 
     const completedCount = task.todoChecklist.filter(
@@ -366,7 +366,7 @@ const updateTaskChecklist = async (req, res) => {
     await task.save();
     const updatedTask = await task.populate(
       "assignedTo",
-      "username email avater"
+      "username email avatar"
     );
     res.json({ updatedTask: updatedTask });
   } catch (error) {

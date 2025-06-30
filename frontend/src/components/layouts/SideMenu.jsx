@@ -30,7 +30,7 @@ const SideMenu = ({ activeMenu }) => {
           <img
             src={user?.avatar || ""}
             alt="Avatar"
-            className=" rounded-full"
+            className=" w-full rounded-full px-1 py-2"
           ></img>
         </div>
         {user?.role === "admin" && (

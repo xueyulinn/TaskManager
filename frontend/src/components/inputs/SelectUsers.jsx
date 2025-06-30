@@ -4,12 +4,12 @@ import axiosInstance from "../../utils/axiosInstance.js";
 import AvatarGroup from "../AvatarGroup.jsx";
 import Modal from "../Modal.jsx";
 import { LuUsers } from "react-icons/lu";
-const SelectUsers = ({ setSelectedUsers }) => {
+const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempSelectedUsers, setTempSelectedUsers] = useState([]);
   const selectedUsersAvatars = allUsers
-    .filter((curUser) => tempSelectedUsers.includes(curUser._id))
+    .filter((curUser) => selectedUsers.includes(curUser._id))
     .map((curUser) => curUser.avatar);
   const toggleUserSelection = (id) => {
     setTempSelectedUsers((prev) =>

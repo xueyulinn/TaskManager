@@ -1,12 +1,19 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router";
-import DashboardLayout from "../../components/layouts/DashboardLayout";
+import { useEffect, useState } from "react";
 import { LuTrash2 } from "react-icons/lu";
+import { useLocation } from "react-router";
+import AttachmentListInput from "../../components/inputs/AttachmentListInput";
 import SelectUsers from "../../components/inputs/SelectUsers";
+import TodoListInput from "../../components/inputs/TodoListInput";
+import DashboardLayout from "../../components/layouts/DashboardLayout";
+import { API_PATHS } from "../../utils/apiPath";
+import axiosInstance from "../../utils/axiosInstance";
 import { PRIORITY_DATA } from "../../utils/data";
+import moment from "moment";
 const CreateTask = () => {
   const location = useLocation();
-  const taskId = location.state || {};
+  const taskId = location.state.taskId;
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
@@ -16,11 +23,112 @@ const CreateTask = () => {
     todoChecklist: [],
     attachments: [],
   });
+  const [curTask, setCurTask] = useState(null);
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const handleValueChange = (key, value) => {
     setTaskData((preData) => ({ ...preData, [key]: value }));
   };
+  const handleSubmit = () => {
+    setError(null);
+    if (!taskData.title) {
+      setError("Task title is required.");
+      return;
+    }
+    if (!taskData.description) {
+      setError("Task description is required.");
+      return;
+    }
+    if (!taskData.dueDate) {
+      setError("Task duedate is required.");
+      return;
+    }
+    if (taskData.assignedTo.length == 0) {
+      setError("Task not assigned to anyone.");
+      return;
+    }
+    if (taskData.todoChecklist.length == 0) {
+      setError("Task checklist is required.");
+      return;
+    }
+    if (taskId) {
+      updateTask();
+      return;
+    }
+    createTask();
+  };
 
+  const createTask = async () => {
+    try {
+      setLoading(true);
+      const todoList = taskData.todoChecklist.map((item) => ({
+        text: item,
+        completed: false,
+      }));
+      const res = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
+        ...taskData,
+        todoChecklist: todoList,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+      });
+      alert("Successfully created");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getDetailsById = async () => {
+    try {
+      const res = await axiosInstance.get(
+        API_PATHS.TASKS.GET_TASK_BY_ID(taskId)
+      );
+      const taskInfo = res.data;
+      if (taskInfo) {
+        setCurTask(taskInfo);
+        setTaskData({
+          title: taskInfo.title,
+          description: taskInfo.description,
+          priority: taskInfo.priority,
+          dueDate: taskInfo.dueDate
+            ? moment(taskInfo.dueDate).format("YYYY-MM-DD")
+            : null,
+          assignedTo: taskInfo.assignedTo?.map((item) => item._id),
+          todoChecklist: taskInfo.todoChecklist.map((item) => item.text),
+          attachments: taskInfo.attachments,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (taskId) {
+      getDetailsById();
+    }
+    return () => {};
+  }, [taskId]);
+  const updateTask = async () => {
+    try {
+      setLoading(true);
+      const todoList = taskData.todoChecklist.map((item) => {
+        const preChecklist = curTask?.todoChecklist || [];
+        const matchedTask = preChecklist.find((task) => task.text == item);
+        return {
+          text: item,
+          completed: matchedTask ? matchedTask.completed : false,
+        };
+      });
+      await axiosInstance.put(API_PATHS.TASKS.UPDATE_TASK(taskId), {
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        todoChecklist: todoList,
+      });
+      alert("Update Sucessfully");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <DashboardLayout activeMenu={"Create Task"}>
       <div className="grid grid-cols-4 mt-4">
@@ -32,7 +140,7 @@ const CreateTask = () => {
             {taskId && (
               <button
                 onClick={() => setOpenDeleteAlert(true)}
-                className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded px-2 py-1 border border-rose-100 hover:border-rose-300 cursor-pointer"
+                className="delete-btn"
               >
                 <LuTrash2 className="text-base" /> Delete
               </button>
@@ -63,8 +171,8 @@ const CreateTask = () => {
               placeholder="Describe task"
               className="form-input"
               rows={4}
-              value={taskData.description}
-              onChange={({ event }) =>
+              value={taskData?.description}
+              onChange={(event) =>
                 handleValueChange("description", event.target.value)
               }
             />
@@ -77,7 +185,7 @@ const CreateTask = () => {
               </label>
               <select
                 className="text-xs md:text-sm mx-[8px] border border-gray-100 bg-gray-50"
-                onChange={({ event }) =>
+                onChange={(event) =>
                   handleValueChange("priority", event.target.value)
                 }
               >
@@ -94,8 +202,8 @@ const CreateTask = () => {
 
               <input
                 className="text-xs md:text-sm mx-[12px] bg-gray-50 border border-gray-100"
-                value={taskData.dueDate}
-                onChange={({ event }) =>
+                value={taskData?.dueDate}
+                onChange={(event) =>
                   handleValueChange("dueDate", event.target.value)
                 }
                 type="date"
@@ -107,12 +215,47 @@ const CreateTask = () => {
                 Assign To
               </label>
               <SelectUsers
+                selectedUsers={taskData.assignedTo}
                 setSelectedUsers={(assignedUsers) =>
                   handleValueChange("assignedTo", assignedUsers)
                 }
               />
             </div>
           </div>
+
+          <div className=" mt-3">
+            <label className="text-xs md:text-base font-medium text-slate-600 mr-3">
+              TODO Checklist
+            </label>
+            <TodoListInput
+              todoList={taskData?.todoChecklist}
+              setTodoList={(val) => handleValueChange("todoChecklist", val)}
+            />
+          </div>
+
+          <div className=" mt-3">
+            <label className="text-xs md:text-base font-medium text-slate-600 mr-3">
+              Add Attachments
+            </label>
+            <AttachmentListInput
+              attachments={taskData?.attachments}
+              setAttachments={(val) => handleValueChange("attachments", val)}
+            />
+          </div>
+
+          {error && (
+            <p className=" text-xs md:text-base text-red-500 font-medium mt-3">
+              {error}
+            </p>
+          )}
+
+          <button
+            className="add-btn mt-5 uppercase"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {taskId ? "Update Task" : "Create Task"}
+          </button>
         </div>
       </div>
     </DashboardLayout>

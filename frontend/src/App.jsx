@@ -13,32 +13,25 @@ import PrivateRoute from "./routes/PrivateRoute";
 import UserProvider, { UserContext } from "./context/UserContext";
 import { useContext } from "react";
 import CreateTask from "./pages/admin/CreateTask";
+import ManageTask from "./pages/admin/ManageTask";
 const App = () => {
   return (
     <Router>
       <UserProvider>
         <Routes>
-          <Route path="/accounts/login" element={<Login></Login>}></Route>
-          <Route path="/accounts/signup" element={<Signup></Signup>}></Route>
+          <Route path="/accounts/login" element={<Login />}></Route>
+          <Route path="/accounts/signup" element={<Signup />}></Route>
 
           <Route
             element={<PrivateRoute allowedRoles={["admin"]}></PrivateRoute>}
           >
-            <Route
-              path="/admin/dashboard"
-              element={<DashBoard></DashBoard>}
-            ></Route>
-            <Route
-              path="/admin/create-task"
-              element={<CreateTask></CreateTask>}
-            ></Route>
+            <Route path="/admin/dashboard" element={<DashBoard />}></Route>
+            <Route path="/admin/create-task" element={<CreateTask />}></Route>
+            <Route path="/admin/tasks" element={<ManageTask />}></Route>
           </Route>
 
-          <Route
-            path="/user/dashboard"
-            element={<UserDashBoard></UserDashBoard>}
-          ></Route>
-          <Route path="/" element={<Root />}></Route>
+          <Route path="/user/dashboard" element={<UserDashBoard />}></Route>
+          <Route path="/*" element={<Root />}></Route>
         </Routes>
       </UserProvider>
     </Router>
