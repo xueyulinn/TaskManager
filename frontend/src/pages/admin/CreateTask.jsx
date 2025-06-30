@@ -8,7 +8,10 @@ import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { API_PATHS } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
 import { PRIORITY_DATA } from "../../utils/data";
+import Modal from "../../components/Modal";
+import { useNavigate } from "react-router";
 import moment from "moment";
+import DeleteAlert from "../../components/DeleteAlert";
 const CreateTask = () => {
   const location = useLocation();
   const taskId = location.state.taskId;
@@ -25,6 +28,7 @@ const CreateTask = () => {
   });
   const [curTask, setCurTask] = useState(null);
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
+  const navigate = useNavigate();
   const handleValueChange = (key, value) => {
     setTaskData((preData) => ({ ...preData, [key]: value }));
   };
@@ -106,6 +110,7 @@ const CreateTask = () => {
     }
     return () => {};
   }, [taskId]);
+
   const updateTask = async () => {
     try {
       setLoading(true);
@@ -127,6 +132,16 @@ const CreateTask = () => {
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteTask = async () => {
+    try {
+      await axiosInstance.delete(API_PATHS.TASKS.DELETE_TASK(taskId));
+      setOpenDeleteAlert(false);
+      navigate("/admin/tasks");
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -258,6 +273,17 @@ const CreateTask = () => {
           </button>
         </div>
       </div>
+
+      <Modal
+        isOpen={openDeleteAlert}
+        title={"Delete Task"}
+        onClose={() => setOpenDeleteAlert(false)}
+      >
+        <DeleteAlert
+          content={"Are you sure you want to delete this task?"}
+          onClick={deleteTask}
+        />
+      </Modal>
     </DashboardLayout>
   );
 };

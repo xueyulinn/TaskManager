@@ -376,7 +376,7 @@ const updateTaskChecklist = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    await Task.findByIdAndDelete(req.params.id);
+    await Task.findByIdAndDelete(req.params.taskId);
     res.status(201).json({ message: "Deleted successfully" });
   } catch (error) {
     res.json({ error: error.message });

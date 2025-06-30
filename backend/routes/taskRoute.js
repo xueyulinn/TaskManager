@@ -23,6 +23,6 @@ router.get("/:taskId", userVerify, getTaskById);
 router.put("/:taskId", userVerify, updateTask);
 router.put("/:id/status", userVerify, updateTaskStatus); // Update task status
 router.put("/:id/todo", userVerify, updateTaskChecklist); // Update task checklist
-router.delete("/:id", userVerify, adminOnly, deleteTask); // Delete a task (Admin only)
+router.delete("/:taskId", userVerify, adminOnly, deleteTask); // Delete a task (Admin only)
 
 export default router;
