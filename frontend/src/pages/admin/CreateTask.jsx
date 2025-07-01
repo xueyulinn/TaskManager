@@ -14,7 +14,7 @@ import moment from "moment";
 import DeleteAlert from "../../components/DeleteAlert";
 const CreateTask = () => {
   const location = useLocation();
-  const taskId = location.state.taskId;
+  const taskId = location.state?.taskId;
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [taskData, setTaskData] = useState({

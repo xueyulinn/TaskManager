@@ -14,6 +14,7 @@ import UserProvider, { UserContext } from "./context/UserContext";
 import { useContext } from "react";
 import CreateTask from "./pages/admin/CreateTask";
 import ManageTask from "./pages/admin/ManageTask";
+import ManageUsers from "./pages/admin/ManageUsers";
 const App = () => {
   return (
     <Router>
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/admin/dashboard" element={<DashBoard />}></Route>
             <Route path="/admin/create-task" element={<CreateTask />}></Route>
             <Route path="/admin/tasks" element={<ManageTask />}></Route>
+            <Route path="/admin/users" element={<ManageUsers />}></Route>
           </Route>
 
           <Route path="/user/dashboard" element={<UserDashBoard />}></Route>

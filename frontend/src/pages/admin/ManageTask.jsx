@@ -33,6 +33,25 @@ const ManageTask = () => {
     };
     getAllTasks();
   }, [status]);
+
+  const handleDownload = async () => {
+    try {
+      const res = await axiosInstance.get(API_PATHS.REPORTS.EXPORT_TASKS, {
+        responseType: "blob",
+      });
+
+      const url = URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "task_details.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <DashboardLayout activeMenu={"Manage Tasks"}>
       <div className="flex flex-col  gap-3  mt-3">
@@ -47,7 +66,7 @@ const ManageTask = () => {
                 setActive={setStatus}
               />
             )}
-            <button className="download-btn flex">
+            <button className="download-btn flex" onClick={handleDownload}>
               <LuFileSpreadsheet className="text-lg" /> Download Report
             </button>
           </div>
