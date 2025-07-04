@@ -1,5 +1,6 @@
 import Task from "../models/Task.js";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 const createTask = async (req, res) => {
   try {
     const {
@@ -108,7 +109,7 @@ const getTaskById = async (req, res) => {
     const id = req.params.taskId;
     const task = await Task.findById(id).populate(
       "assignedTo",
-      "username email avatar"
+      "username email avatar -_id"
     );
     return res.json(task);
   } catch (error) {
@@ -191,28 +192,21 @@ const getDashboardData = async (req, res) => {
 
 const getUserDashboardData = async (req, res) => {
   try {
-    const { totalTasks, completedTasks, pendingTasks, overdueTasks } =
+    const [totalTasks, completedTasks, pendingTasks, overdueTasks] =
       await Promise.all([
-        await Task.countDocuments(),
-        await Task.countDocuments({
-          status: "Completed",
-          assignedTo: req.user.id,
-        }),
-        await Task.countDocuments({
-          status: "Pending",
-          assignedTo: req.user.id,
-        }),
-        await Task.countDocuments({
+        Task.countDocuments(),
+        Task.countDocuments({ status: "Completed", assignedTo: req.user.id }),
+        Task.countDocuments({ status: "Pending", assignedTo: req.user.id }),
+        Task.countDocuments({
           status: { $ne: "Completed" },
           dueDate: { $lt: new Date() },
           assignedTo: req.user.id,
         }),
       ]);
-
     const taskDistributionRaw = await Task.aggregate([
       {
         $match: {
-          assignedTo: req.user.id,
+          assignedTo: new mongoose.Types.ObjectId(req.user.id),
         },
       },
       {
@@ -236,12 +230,12 @@ const getUserDashboardData = async (req, res) => {
     const taskPriorityLevelsRaw = await Task.aggregate([
       {
         $match: {
-          assignedId: req.user.id,
+          assignedTo: new mongoose.Types.ObjectId(req.user.id),
         },
       },
       {
         $group: {
-          _id: "$Priority",
+          _id: "$priority",
           count: { $sum: 1 },
         },
       },
@@ -340,7 +334,7 @@ const updateTaskStatus = async (req, res) => {
 const updateTaskChecklist = async (req, res) => {
   try {
     const { todoChecklist } = req.body;
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findById(req.params.taskId);
     if (!task) return res.error(404).json({ message: "Task not found" });
     const user = await User.findById(req.user.id);
     if (!task.assignedTo.includes(user.id) && user.role !== "admin")

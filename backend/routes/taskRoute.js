@@ -21,8 +21,8 @@ router.get("/dashboard-data", userVerify, getDashboardData);
 router.get("/user-dashboard-data", userVerify, getUserDashboardData);
 router.get("/:taskId", userVerify, getTaskById);
 router.put("/:taskId", userVerify, updateTask);
-router.put("/:id/status", userVerify, updateTaskStatus); // Update task status
-router.put("/:id/todo", userVerify, updateTaskChecklist); // Update task checklist
+router.put("/:taskId/status", userVerify, updateTaskStatus); // Update task status
+router.put("/:taskId/todo", userVerify, updateTaskChecklist); // Update task checklist
 router.delete("/:taskId", userVerify, adminOnly, deleteTask); // Delete a task (Admin only)
 
 export default router;

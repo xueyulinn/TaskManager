@@ -9,12 +9,14 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import DashBoard from "./pages/admin/DashBoard";
 import UserDashBoard from "./pages/user/UserDashBoard";
+import MyTasks from "./pages/user/MyTasks";
 import PrivateRoute from "./routes/PrivateRoute";
 import UserProvider, { UserContext } from "./context/UserContext";
 import { useContext } from "react";
 import CreateTask from "./pages/admin/CreateTask";
 import ManageTask from "./pages/admin/ManageTask";
 import ManageUsers from "./pages/admin/ManageUsers";
+import TaskDetails from "./pages/user/TaskDetails";
 const App = () => {
   return (
     <Router>
@@ -32,7 +34,12 @@ const App = () => {
             <Route path="/admin/users" element={<ManageUsers />}></Route>
           </Route>
 
+          <Route path="/user/tasks" element={<MyTasks />}></Route>
           <Route path="/user/dashboard" element={<UserDashBoard />}></Route>
+          <Route
+            path="/user/task-details/:taskId"
+            element={<TaskDetails />}
+          ></Route>
           <Route path="/*" element={<Root />}></Route>
         </Routes>
       </UserProvider>
