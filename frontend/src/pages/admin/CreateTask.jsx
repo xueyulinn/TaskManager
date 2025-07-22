@@ -12,6 +12,7 @@ import Modal from "../../components/Modal";
 import { useNavigate } from "react-router";
 import moment from "moment";
 import DeleteAlert from "../../components/DeleteAlert";
+import { toast } from "react-toastify";
 const CreateTask = () => {
   const location = useLocation();
   const taskId = location.state?.taskId;
@@ -73,7 +74,7 @@ const CreateTask = () => {
         todoChecklist: todoList,
         dueDate: new Date(taskData.dueDate).toISOString(),
       });
-      alert("Successfully created");
+      toast.success("Task created.");
     } catch (error) {
       console.log(error);
     } finally {
@@ -86,6 +87,7 @@ const CreateTask = () => {
         API_PATHS.TASKS.GET_TASK_BY_ID(taskId)
       );
       const taskInfo = res.data;
+      console.log(taskInfo.assignedTo);
       if (taskInfo) {
         setCurTask(taskInfo);
         setTaskData({
@@ -110,7 +112,6 @@ const CreateTask = () => {
     }
     return () => {};
   }, [taskId]);
-
   const updateTask = async () => {
     try {
       setLoading(true);
@@ -127,9 +128,13 @@ const CreateTask = () => {
         dueDate: new Date(taskData.dueDate).toISOString(),
         todoChecklist: todoList,
       });
-      alert("Update Sucessfully");
+      toast.success("Task updated.");
     } catch (error) {
-      console.log(error);
+      if (error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        toast.error("Server error.");
+      }
     } finally {
       setLoading(false);
     }
@@ -138,6 +143,7 @@ const CreateTask = () => {
   const deleteTask = async () => {
     try {
       await axiosInstance.delete(API_PATHS.TASKS.DELETE_TASK(taskId));
+      toast.success("Task deleted.");
       setOpenDeleteAlert(false);
       navigate("/admin/tasks");
     } catch (error) {
@@ -173,7 +179,7 @@ const CreateTask = () => {
               onChange={(event) =>
                 handleValueChange("title", event.target.value)
               }
-              placeholder="Create APP UI"
+              placeholder="Task title"
             ></input>
           </div>
           {/* description */}
@@ -190,6 +196,7 @@ const CreateTask = () => {
               onChange={(event) =>
                 handleValueChange("description", event.target.value)
               }
+              maxLength={500}
             />
           </div>
 
@@ -204,8 +211,8 @@ const CreateTask = () => {
                   handleValueChange("priority", event.target.value)
                 }
               >
-                {PRIORITY_DATA.map((item, index) => (
-                  <option key={index}> {item.label}</option>
+                {PRIORITY_DATA.map((item) => (
+                  <option key={item.label}> {item.label}</option>
                 ))}
               </select>
             </div>
@@ -238,7 +245,7 @@ const CreateTask = () => {
             </div>
           </div>
 
-          <div className=" mt-3">
+          <div className="mt-3">
             <label className="text-xs md:text-base font-medium text-slate-600 mr-3">
               TODO Checklist
             </label>
@@ -248,7 +255,7 @@ const CreateTask = () => {
             />
           </div>
 
-          <div className=" mt-3">
+          <div className="mt-3">
             <label className="text-xs md:text-base font-medium text-slate-600 mr-3">
               Add Attachments
             </label>

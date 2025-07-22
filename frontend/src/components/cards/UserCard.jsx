@@ -1,16 +1,21 @@
-const UserCard = ({ userInfo }) => {
+const UserCard = ({ userInfo, handleDeleteUser }) => {
   return (
     <div className="user-card p-2">
-      <div className=" flex justify-start gap-4">
-        <img
-          className="h-12 w-12 rounded-full border-2 border-white"
-          src={userInfo.avatar}
-          alt={userInfo.username}
-        />
-        <div className=" flex flex-col gap-2">
-          <p className="text-sm font-medium">{userInfo.username}</p>
-          <p className=" text-xs text-gray-500">{userInfo.email}</p>
+      <div className=" flex justify-between">
+        <div className=" flex justify-start gap-4">
+          <img
+            className="h-12 w-12 rounded-full border-2 border-white"
+            src={userInfo.avatar}
+            alt={userInfo.username}
+          />
+          <div className=" flex flex-col gap-2">
+            <p className="text-sm font-medium">{userInfo.username}</p>
+            <p className=" text-xs text-gray-500">{userInfo.email}</p>
+          </div>
         </div>
+        <button className="delete-btn" onClick={handleDeleteUser}>
+          Delete
+        </button>
       </div>
 
       <div className="flex items-end gap-3 mt-5">

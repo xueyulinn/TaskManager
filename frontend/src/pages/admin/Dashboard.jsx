@@ -52,7 +52,7 @@ const DashBoard = () => {
   };
 
   const onSeeMore = () => {
-    navigate("/tasks");
+    navigate("/admin/tasks");
   };
 
   // load data

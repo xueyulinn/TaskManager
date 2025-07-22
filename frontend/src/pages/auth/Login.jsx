@@ -5,29 +5,30 @@ import AuthLayout from "../../components/layouts/AuthLayout";
 import { UserContext } from "../../context/UserContext.jsx";
 import { API_PATHS } from "../../utils/apiPath.js";
 import axiosInstance from "../../utils/axiosInstance.js";
-import { validateEmail } from "../../utils/helper.js";
+import { toast } from "react-toastify";
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const { updateUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const idDisabled = !identifier || !password;
   const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!validateEmail(email)) {
-      setError("Invalid email address.");
+    if (!identifier) {
+      setError("Please enter username or email.");
       return;
     }
-
     if (!password) {
       setError("Please eneter the password.");
       return;
     }
     setError("");
-
     try {
+      setLoading(true);
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
-        email,
+        identifier,
         password,
       });
 
@@ -35,15 +36,16 @@ const Login = () => {
       if (token) {
         updateUser(response.data);
       }
-
+      setLoading(false);
       if (role === "admin") {
         navigate("/admin/dashboard");
       } else navigate("/user/dashboard");
+      toast.success("Login successfully.");
     } catch (error) {
-      if (error.response && error.response.data.message) {
+      if (error?.response?.data?.message) {
         setError(error.response.data.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        toast.error("Server error.");
       }
     }
   };
@@ -57,35 +59,44 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleLogin}>
-            <Input
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
-              label="Email Address"
-              placeholder="john@example.com"
-              type="text"
-            />
+            <div className=" flex flex-col gap-3">
+              <Input
+                value={identifier}
+                onChange={(event) => setIdentifier(event.target.value)}
+                placeholder="Username or E-mail"
+                type="text"
+              />
 
-            <Input
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-              label="Password"
-              placeholder="Min 8 Characters"
-              type="password"
-            />
+              <Input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Password"
+                type="password"
+              />
 
-            <button type="submit" className="btn-primary">
-              LOGIN
-            </button>
-            {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
-            <p className="text-[13px] text-slate-800 mt-3">
-              Don't have an account?
-              <Link
-                to="/accounts/signup"
-                className="font-medium text-primary underline ml-1"
+              <button
+                type="submit"
+                className={idDisabled ? "btn-disabled" : "btn-primary"}
+                disabled={idDisabled || loading}
               >
-                SignUp
-              </Link>
-            </p>
+                LOGIN
+              </button>
+              {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
+              <div className=" flex justify-between">
+                <Link
+                  to="/accounts/password/reset"
+                  className="text-primary underline ml-1"
+                >
+                  Forgot Password?
+                </Link>
+                <Link
+                  to="/accounts/signup"
+                  className="text-primary underline ml-1"
+                >
+                  SignUp
+                </Link>
+              </div>
+            </div>
           </form>
         </div>
       </AuthLayout>

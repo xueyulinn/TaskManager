@@ -57,6 +57,7 @@ const exportUsersReport = async (req, res) => {
     const users = await User.find().select("username email _id").lean();
 
     const tasks = await Task.find();
+
     let usersWithTasks = {};
     users.forEach((user) => {
       usersWithTasks[user._id] = {
@@ -108,6 +109,7 @@ const exportUsersReport = async (req, res) => {
 
     return workbook.xlsx.write(res).then(() => res.end());
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: error.message,
     });

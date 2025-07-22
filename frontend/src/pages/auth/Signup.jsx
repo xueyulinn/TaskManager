@@ -6,8 +6,9 @@ import AuthLayout from "../../components/layouts/AuthLayout";
 import { UserContext } from "../../context/UserContext";
 import { API_PATHS } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
-import { validateEmail } from "../../utils/helper";
+import { validateEmail, validatePassword } from "../../utils/helper";
 import uploadImage from "../../utils/uploadImage";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +18,8 @@ const Signup = () => {
   const [error, setError] = useState(null);
   const { updateUser } = useContext(UserContext);
   const [profileImg, setProfileImg] = useState(null);
+  const isDisabled = !username || !email || !password;
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -31,19 +34,17 @@ const Signup = () => {
       return;
     }
 
-    if (!password) {
-      setError("Please enter the password");
+    if (!validatePassword(password)) {
+      setError(
+        "Must be at least 8 characters with letter and number, no non-ASCII characters."
+      );
       return;
     }
     setError("");
     let avatar = "";
 
     try {
-      if (profileImg) {
-        const imageUploadres = await uploadImage(profileImg);
-        avatar = imageUploadres.imageUrl || "";
-      }
-
+      setLoading(true);
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         username,
         email,
@@ -51,15 +52,18 @@ const Signup = () => {
         password,
         avatar,
       });
+
       const { role } = response.data;
       updateUser(response.data);
+      setLoading(false);
       if (role === "admin") navigate("/admin/dashboard");
       else navigate("/user/dashboard");
+      toast.success("Sign up successfully.");
     } catch (error) {
-      if (error.response && error.response.data.message) {
+      if (error?.response?.data?.message) {
         setError(error.response.data.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        toast.error("Server error.");
       }
     }
   };
@@ -82,36 +86,37 @@ const Signup = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 value={username}
-                onChange={({ target }) => setUsername(target.value)}
+                onChange={(event) => setUsername(event.target.value)}
                 label="Full Name"
-                placeholder="John"
+                placeholder="Username"
                 type="text"
               />
 
               <Input
                 value={email}
-                onChange={({ target }) => setEmail(target.value)}
-                label="Email Address"
-                placeholder="john@example.com"
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="E-mail"
                 type="text"
               />
 
               <Input
                 value={password}
-                onChange={({ target }) => setPassword(target.value)}
-                label="Password"
-                placeholder="Min 8 Characters"
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Password"
                 type="password"
               />
               <Input
                 value={adminInviteToken}
-                onChange={({ target }) => setAdminInviteToken(target.value)}
-                label="Admin Invite Token"
-                placeholder="6 Digit Code"
+                onChange={(event) => setAdminInviteToken(event.target.value)}
+                placeholder="6 Digit Code (Admin Only)"
                 type="text"
               />
             </div>
-            <button type="submit" className="btn-primary">
+            <button
+              type="submit"
+              disabled={isDisabled || loading}
+              className={isDisabled ? "btn-disabled" : "btn-primary"}
+            >
               SIGN UP
             </button>
             {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}

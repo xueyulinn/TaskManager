@@ -109,11 +109,11 @@ const getTaskById = async (req, res) => {
     const id = req.params.taskId;
     const task = await Task.findById(id).populate(
       "assignedTo",
-      "username email avatar -_id"
+      "username email avatar _id"
     );
     return res.json(task);
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    res.status(500).json({ message: "Server error." });
   }
 };
 
@@ -290,16 +290,16 @@ const updateTask = async (req, res) => {
     task.todoChecklist = todoChecklist || task.todoChecklist;
     task.attachments = attachments || task.attachments;
 
-    if (assignedTo && !Array.isArray(assignedTo)) {
+    if (!assignedTo || !Array.isArray(assignedTo)) {
       return res
         .status(400)
         .json({ message: "assignedTo must be an array of user IDs" });
     }
-
+    task.assignedTo = assignedTo || task.assignedTo;
     const updatedTask = await task.save();
-    res.json({ message: "Task updated successfully", updatedTask });
+    res.status(200).json({ message: "Task updated successfully" });
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    res.status(500).json({ message: "Server error." });
   }
 };
 

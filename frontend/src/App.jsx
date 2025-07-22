@@ -17,33 +17,59 @@ import CreateTask from "./pages/admin/CreateTask";
 import ManageTask from "./pages/admin/ManageTask";
 import ManageUsers from "./pages/admin/ManageUsers";
 import TaskDetails from "./pages/user/TaskDetails";
+import PasswordResetRequest from "./pages/auth/PasswordResetRequest";
+import PasswordReset from "./pages/auth/PasswordReset";
+import { ToastContainer, Bounce } from "react-toastify";
 const App = () => {
   return (
-    <Router>
-      <UserProvider>
-        <Routes>
-          <Route path="/accounts/login" element={<Login />}></Route>
-          <Route path="/accounts/signup" element={<Signup />}></Route>
+    <>
+      <Router>
+        <UserProvider>
+          <Routes>
+            <Route path="/accounts/login" element={<Login />}></Route>
+            <Route path="/accounts/signup" element={<Signup />}></Route>
+            <Route
+              path="/accounts/password/reset"
+              element={<PasswordResetRequest />}
+            ></Route>
+            <Route
+              path="/accounts/reset-password/:token"
+              element={<PasswordReset />}
+            ></Route>
+            <Route
+              element={<PrivateRoute allowedRoles={["admin"]}></PrivateRoute>}
+            >
+              <Route path="/admin/dashboard" element={<DashBoard />}></Route>
+              <Route path="/admin/create-task" element={<CreateTask />}></Route>
+              <Route path="/admin/tasks" element={<ManageTask />}></Route>
+              <Route path="/admin/users" element={<ManageUsers />}></Route>
+            </Route>
 
-          <Route
-            element={<PrivateRoute allowedRoles={["admin"]}></PrivateRoute>}
-          >
-            <Route path="/admin/dashboard" element={<DashBoard />}></Route>
-            <Route path="/admin/create-task" element={<CreateTask />}></Route>
-            <Route path="/admin/tasks" element={<ManageTask />}></Route>
-            <Route path="/admin/users" element={<ManageUsers />}></Route>
-          </Route>
+            <Route path="/user/tasks" element={<MyTasks />}></Route>
+            <Route path="/user/dashboard" element={<UserDashBoard />}></Route>
+            <Route
+              path="/user/task-details/:taskId"
+              element={<TaskDetails />}
+            ></Route>
+            <Route path="/*" element={<Root />}></Route>
+          </Routes>
+        </UserProvider>
+      </Router>
 
-          <Route path="/user/tasks" element={<MyTasks />}></Route>
-          <Route path="/user/dashboard" element={<UserDashBoard />}></Route>
-          <Route
-            path="/user/task-details/:taskId"
-            element={<TaskDetails />}
-          ></Route>
-          <Route path="/*" element={<Root />}></Route>
-        </Routes>
-      </UserProvider>
-    </Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
+    </>
   );
 };
 

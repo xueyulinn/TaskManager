@@ -53,13 +53,15 @@ const UserDashboard = () => {
   };
 
   const onSeeMore = () => {
-    navigate("/tasks");
+    navigate("/user/tasks");
   };
 
   // load data
   useEffect(() => {
     getDashboardData();
   }, []);
+
+  console.log(pieChartData);
 
   return (
     <DashboardLayout activeMenu="Dashboard">
@@ -108,7 +110,6 @@ const UserDashboard = () => {
             <div className="flex items-center justify-between">
               <h5 className="font-medium">Task Distribution</h5>
             </div>
-
             <CustomPieChart data={pieChartData} colors={COLORS} />
           </div>
         </div>

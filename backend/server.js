@@ -34,6 +34,10 @@ app.use("/api/reports", reportRoutes);
 // expose static resources
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// render client
+app.get("*name", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const PORT = process.env.PORT || 3000;

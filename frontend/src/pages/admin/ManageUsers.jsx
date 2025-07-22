@@ -4,15 +4,23 @@ import { LuFileSpreadsheet } from "react-icons/lu";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPath";
 import UserCard from "../../components/cards/UserCard";
+import { toast } from "react-toastify";
+import Modal from "../../components/Modal";
+import DeleteAlert from "../../components/DeleteAlert";
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
-
+  const [openModal, setOpenModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const getAllUsers = async () => {
     try {
+      setLoading(true);
       const res = await axiosInstance.get(API_PATHS.USERS.GET_ALL_USERS);
       setUsers(res.data);
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      if (error?.response?.data?.message) {
+        toast.error(error?.response?.data?.message);
+      }
     }
   };
   useEffect(() => {
@@ -24,7 +32,6 @@ const ManageUsers = () => {
       const res = await axiosInstance.get(API_PATHS.REPORTS.EXPORT_USERS, {
         responseType: "blob",
       });
-
       const url = URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -34,7 +41,20 @@ const ManageUsers = () => {
       link.parentNode.removeChild(link);
       URL.revokeObjectURL(link);
     } catch (error) {
-      console.log(error);
+      toast.error("Server error.");
+    }
+  };
+
+  const [deletedUserId, setDeletedUserId] = useState(null);
+
+  const handleDeleteUser = async () => {
+    try {
+      axiosInstance.delete(API_PATHS.USERS.DELETE_USER(deletedUserId));
+      setOpenModal(false);
+      getAllUsers();
+      toast.success("User deleted.");
+    } catch (error) {
+      toast.error("Server error.");
     }
   };
 
@@ -52,8 +72,31 @@ const ManageUsers = () => {
       </div>
       <div className=" grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
         {users.length > 0 &&
-          users.map((user) => <UserCard key={user.username} userInfo={user} />)}
+          users.map((user) => (
+            <UserCard
+              key={user.username}
+              userInfo={user}
+              handleDeleteUser={() => {
+                setDeletedUserId(user._id);
+                setOpenModal(true);
+              }}
+            />
+          ))}
+        {!loading && users.length == 0 && (
+          <h1>There are currently no members.</h1>
+        )}
       </div>
+
+      <Modal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        title={"Delete User"}
+      >
+        <DeleteAlert
+          content={"Are you sure you want to delete this user?"}
+          onClick={handleDeleteUser}
+        />
+      </Modal>
     </DashboardLayout>
   );
 };

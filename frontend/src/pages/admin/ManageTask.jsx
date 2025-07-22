@@ -10,12 +10,14 @@ const ManageTask = () => {
   const [tabs, setTabs] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [status, setStatus] = useState("All");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleClick = (taskData) => {
     navigate(`/admin/create-task`, { state: { taskId: taskData._id } });
   };
   useEffect(() => {
     const getAllTasks = async () => {
+      setLoading(true);
       const res = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS, {
         params: {
           status,
@@ -30,6 +32,7 @@ const ManageTask = () => {
         { label: "Completed", count: statusSummary.completedTasks || 0 },
       ];
       setTabs(statusArray);
+      setLoading(false);
     };
     getAllTasks();
   }, [status]);
@@ -81,7 +84,7 @@ const ManageTask = () => {
                 priority={task.priority}
                 status={task.status}
                 progress={task.progress}
-                createdAt={task.progress}
+                createdAt={task.createdAt}
                 dueDate={task.dueDate}
                 assignedTo={task.assignedTo}
                 attachmentCount={task.attachments.length}
@@ -93,6 +96,11 @@ const ManageTask = () => {
                 onClick={() => handleClick(task)}
               />
             ))}
+
+          {loading && <h1>Loading tasks...</h1>}
+          {!loading && tasks.length == 0 && (
+            <h1>There are currently no tasks.</h1>
+          )}
         </div>
       </div>
     </DashboardLayout>

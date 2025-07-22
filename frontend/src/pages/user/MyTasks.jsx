@@ -34,7 +34,7 @@ const MyTasks = () => {
   }, [status]);
 
   return (
-    <DashboardLayout activeMenu={"Manage Tasks"}>
+    <DashboardLayout activeMenu={"My Tasks"}>
       <div className="flex flex-col  gap-3  mt-3">
         {/* header */}
         <div className=" flex gap-3 justify-between">
@@ -73,6 +73,7 @@ const MyTasks = () => {
             ))}
         </div>
       </div>
+      {tasks.length == 0 && <h1>You are not assigned with any tasks.</h1>}
     </DashboardLayout>
   );
 };

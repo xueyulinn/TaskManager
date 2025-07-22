@@ -7,7 +7,7 @@ import { LuUsers } from "react-icons/lu";
 const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tempSelectedUsers, setTempSelectedUsers] = useState([]);
+  const [tempSelectedUsers, setTempSelectedUsers] = useState(selectedUsers);
   const selectedUsersAvatars = allUsers
     .filter((curUser) => selectedUsers.includes(curUser._id))
     .map((curUser) => curUser.avatar);
